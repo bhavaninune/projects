@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Details</title>
+    <!-- Include Font Awesome CSS for the edit icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <h1>Edit User Details</h1>
+
+    <ul id="user-list">
+        <!-- User details will be displayed here dynamically -->
+    </ul>
+
+    <form id="edit-form">
+        <input type="hidden" id="edit-id" name="id">
+        <label for="edit-name">Name:</label>
+        <input type="text" id="edit-name" name="name">
+        <br>
+        <label for="edit-email">Email:</label>
+        <input type="email" id="edit-email" name="email">
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const editForm = document.getElementById('edit-form');
+        const editIdInput = document.getElementById('edit-id');
+        const editNameInput = document.getElementById('edit-name');
+        const editEmailInput = document.getElementById('edit-email');
+
+        // Function to populate the edit form with user details
+        function populateEditForm(user) {
+            editIdInput.value = user._id;
+            editNameInput.value = user.name;
+            editEmailInput.value = user.email;
+        }
+
+        // Function to fetch and display user details
+        function fetchUserDetails() {
+            axios.get('/api/users')
+                .then(response => {
+                    const userList = document.getElementById('user-list');
+                    userList.innerHTML = ''; // Clear existing list
+
+                    response.data.forEach(user => {
+                        // Create a list item for each user
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            ${user.name} - ${user.email}
+                            <span class="edit-btn" data-id="${user._id}">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                        `;
+
+                        // Add a click event listener to the edit icon
+                        const editIcon = listItem.querySelector('.edit-btn');
+                        editIcon.addEventListener('click', () => {
+                            populateEditForm(user);
+                        });
+
+                        // Append the list item to the user list
+                        userList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching user details:', error);
+                });
+        }
+
+        // Function to handle form submission
+        editForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const userId = editIdInput.value;
+            const updatedName = editNameInput.value;
+            const updatedEmail = editEmailInput.value;
+
+            // Send a PUT request to update user details
+            axios.put(`/api/users/${userId}`, {
+                name: updatedName,
+                email: updatedEmail
+            })
+            .then(() => {
+                // Update the user details on the webpage
+                fetchUserDetails();
+                // Clear the form fields
+                editIdInput.value = '';
+                editNameInput.value = '';
+                editEmailInput.value = '';
+            })
+            .catch(error => {
+                console.error('Error updating user details:', error);
+            });
+        });
+
+        // Fetch and display user details when the page loads
+        fetchUserDetails();
+    </script>
+</body>
+</html>
