@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<body>
+<form onsubmit="saveToLocalStorage(event)">
+    <!-- ... (your form elements) ... -->
+</form>
+<ul id="listofusers"></ul>
+<button id="fetchData">Fetch Data</button> <!-- Add a button to trigger the GET request -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+<script>
+    // Function to fetch and display data
+    function fetchData() {
+        axios
+            .get("https://crudcrud.com/api/d5777a33db9b4edd94ab5a717d7229d2/appointmentdata")
+            .then((response) => {
+                const users = response.data;
+                users.forEach((user) => {
+                    showNewUserOnScreen(user);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    document.getElementById("fetchData").addEventListener("click", fetchData);
+
+    // ... (rest of your code for saving and displaying data)
+</script>
+</body>
+</html>
