@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management Tool</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-add {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .btn-add:hover {
+            background-color: #45a049;
+        }
+        .inventory-list {
+            margin-top: 20px;
+        }
+        .inventory-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .buy-options {
+            margin-top: 10px;
+        }
+        .buy-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .buy-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Management Tool</h1>
+        <div class="form-group">
+            <label for="itemName">Item Name</label>
+            <input type="text" id="itemName" placeholder="Enter item name">
+        </div>
+        <div class="form-group">
+            <label for="itemDescription">Item Description</label>
+            <input type="text" id="itemDescription" placeholder="Enter item description">
+        </div>
+        <div class="form-group">
+            <label for="itemPrice">Price</label>
+            <input type="text" id="itemPrice" placeholder="Enter price">
+        </div>
+        <div class="form-group">
+            <label for="itemQuantity">Quantity</label>
+            <input type="text" id="itemQuantity" placeholder="Enter quantity">
+        </div>
+        <button class="btn-add" onclick="addItem()">Add Item</button>
+        <div class="inventory-list" id="inventoryList">
+            <!-- Inventory items will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Define a unique ID for each item
+        let itemIdCounter = 1;
+
+        // Function to add item to the inventory list
+        function addItem() {
+            const itemName = document.getElementById("itemName").value;
+            const itemDescription = document.getElementById("itemDescription").value;
+            const itemPrice = document.getElementById("itemPrice").value;
+            const itemQuantity = document.getElementById("itemQuantity").value;
+
+            // Create a unique item ID
+            const itemId = `item${itemIdCounter++}`;
+
+            // Create a new inventory item element
+            const inventoryItem = document.createElement("div");
+            inventoryItem.classList.add("inventory-item");
+            inventoryItem.innerHTML = `
+                <h2>${itemName}</h2>
+                <p><strong>Description:</strong> ${itemDescription}</p>
+                <p><strong>Price:</strong> $${itemPrice}</p>
+                <p><strong>Quantity:</strong> ${itemQuantity}</p>
+                <div class="buy-options">
+                    <button class="buy-button" onclick="buyItem('${itemId}', 1)">Buy One</button>
+                    <button class="buy-button" onclick="buyItem('${itemId}', 2)">Buy Two</button>
+                    <button class="buy-button" onclick="buyItem('${itemId}', 3)">Buy Three</button>
+                </div>
+            `;
+
+            // Add the new item to the inventory list
+            const inventoryList = document.getElementById("inventoryList");
+            inventoryList.appendChild(inventoryItem);
+
+            // Clear input fields
+            document.getElementById("itemName").value = "";
+            document.getElementById("itemDescription").value = "";
+            document.getElementById("itemPrice").value = "";
+            document.getElementById("itemQuantity").value = "";
+        }
+
+        // Function to update item quantity via API
+        function buyItem(itemId, quantity) {
+            // Replace with your actual CRUD.com API endpoint and API key
+            const apiUrl = "https://crudcrud.com/api/YOUR_CRUDCOM_API_KEY/inventory"; // Example URL
+            const apiKey = "YOUR_API_KEY_HERE"; // Replace with your API key
+
+            // Retrieve the current item quantity from the item's element
+            const itemElement = document.getElementById(itemId);
+            const currentQuantity = parseInt(itemElement.querySelector("p strong:contains('Quantity')").nextSibling.textContent.trim());
+
+            // Calculate the new quantity after purchase
+            const newQuantity = currentQuantity - quantity;
+
+            // Data to send in the PUT request
+            const data = {
+                id: itemId, // Use the item ID as the identifier
+                quantity: newQuantity,
+            };
+
+            // Send a PUT request to update the item quantity
+            fetch(apiUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Item quantity updated successfully
+                    itemElement.querySelector("p strong:contains('Quantity')").nextSibling.textContent = ` ${newQuantity}`;
+                    console.log(`Item ${itemId} quantity updated to ${newQuantity}`);
+                } else {
+                    // Handle errors here
+                    console.error(`Error updating item ${itemId} quantity`);
+                }
+            })
+            .catch(error => {
+                // Handle network errors here
+                console.error("Network error:", error);
+            });
+        }
+
+        // Custom jQuery-like selector to find elements by text content
+        function contains(selector, text) {
+            var elements = document.querySelectorAll(selector);
+            return Array.prototype.filter.call(elements, function(element){
+                return RegExp(text).test(element.textContent);
+            });
+        }
+    </script>
+</body>
+</html>
