@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management Tool</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-add {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .btn-add:hover {
+            background-color: #45a049;
+        }
+        .inventory-list {
+            margin-top: 20px;
+        }
+        .inventory-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .buy-options {
+            margin-top: 10px;
+        }
+        .buy-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .buy-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Management Tool</h1>
+        <div class="form-group">
+            <label for="itemName">Item Name</label>
+            <input type="text" id="itemName" placeholder="Enter item name">
+        </div>
+        <div class="form-group">
+            <label for="itemDescription">Item Description</label>
+            <input type="text" id="itemDescription" placeholder="Enter item description">
+        </div>
+        <div class="form-group">
+            <label for="itemPrice">Price</label>
+            <input type="text" id="itemPrice" placeholder="Enter price">
+        </div>
+        <div class="form-group">
+            <label for="itemQuantity">Quantity</label>
+            <input type="text" id="itemQuantity" placeholder="Enter quantity">
+        </div>
+        <button class="btn-add" onclick="addItem()">Add Item</button>
+        <div class="inventory-list" id="inventoryList">
+            <!-- Inventory items will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to add item to the inventory list
+        function addItem() {
+            const itemName = document.getElementById("itemName").value;
+            const itemDescription = document.getElementById("itemDescription").value;
+            const itemPrice = document.getElementById("itemPrice").value;
+            const itemQuantity = document.getElementById("itemQuantity").value;
+
+            // Create a new inventory item element
+            const inventoryItem = document.createElement("div");
+            inventoryItem.classList.add("inventory-item");
+            inventoryItem.innerHTML = `
+                <h2>${itemName}</h2>
+                <p><strong>Description:</strong> ${itemDescription}</p>
+                <p><strong>Price:</strong> $${itemPrice}</p>
+                <p><strong>Quantity:</strong> ${itemQuantity}</p>
+                <div class="buy-options">
+                    <button class="buy-button" onclick="buyItem(this)">Buy One</button>
+                    <button class="buy-button" onclick="buyItem(this)">Buy Two</button>
+                    <button class="buy-button" onclick="buyItem(this)">Buy Three</button>
+                </div>
+            `;
+
+            // Add the new item to the inventory list
+            const inventoryList = document.getElementById("inventoryList");
+            inventoryList.appendChild(inventoryItem);
+
+            // Clear input fields
+            document.getElementById("itemName").value = "";
+            document.getElementById("itemDescription").value = "";
+            document.getElementById("itemPrice").value = "";
+            document.getElementById("itemQuantity").value = "";
+        }
+
+        // Function to update item quantity
+        function buyItem(buttonElement) {
+            const itemElement = buttonElement.closest(".inventory-item");
+            const quantityElement = itemElement.querySelector("p strong:contains('Quantity')");
+            const currentQuantity = parseInt(quantityElement.nextSibling.textContent.trim());
+
+            // Determine the quantity to buy based on the button clicked
+            let quantityToBuy = 0;
+            if (buttonElement.textContent === "Buy One") {
+                quantityToBuy = 1;
+            } else if (buttonElement.textContent === "Buy Two") {
+                quantityToBuy = 2;
+            } else if (buttonElement.textContent === "Buy Three") {
+                quantityToBuy = 3;
+            }
+
+            if (currentQuantity >= quantityToBuy) {
+                // Calculate the new quantity after purchase
+                const newQuantity = currentQuantity - quantityToBuy;
+                quantityElement.nextSibling.textContent = ` ${newQuantity}`;
+            } else {
+                alert("Not enough quantity in stock.");
+            }
+        }
+
+        // Custom selector to find elements by text content
+        function contains(selector, text) {
+            var elements = document.querySelectorAll(selector);
+            return Array.prototype.filter.call(elements, function(element){
+                return RegExp(text).test(element.textContent);
+            });
+        }
+    </script>
+</body>
+</html>
