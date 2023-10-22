@@ -1,78 +1,14 @@
-<html>
-  <body>
-    <form onsubmit="saveToLocalStorage(event)">
-      <label>Name</label>
-      <input id="username" type="text" name="username" required />
-      <label>EmailId</label>
-      <input id="email" type="email" name="email" required />
-      <label>Phone Number</label>
-      <input id="phonenumber" type="tel" name="phonenumber" required />
-      <button type="submit">Submit</button>
-    </form>
-    <ul id="listofusers"></ul>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
-    <script>
-      function saveToLocalStorage(event) {
-        event.preventDefault();
-        const name = event.target.username.value;
-        const email = event.target.email.value;
-        const phonenumber = event.target.phonenumber.value;
-        const obj = {
-          name,
-          email,
-          phonenumber,
-        };
-
-        // Send the data to the API using axios
-        axios
-          .post("https://crudcrud.com/api/842a61df873346d682851fe339f4d51c/appointmentdata", obj)
-          .then((response) => {
-            showNewUserOnScreen(response.data);
-            console.log(response);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-
-        // Clear input fields
-        document.getElementById("email").value = "";
-        document.getElementById("username").value = "";
-        document.getElementById("phonenumber").value = "";
-      }
-
-      function showNewUserOnScreen(user) {
-        const userList = document.getElementById("listofusers");
-
-        // Check if user data with the same email exists in local storage and remove it
-        removeUserFromScreen(user.email);
-
-        // Create a new list item and add it to the list
-        const listItem = document.createElement("li");
-        listItem.setAttribute("data-email", user.email);
-        listItem.textContent = `${user.name} (${user.email}) - Phone: ${user.phonenumber}`;
-        userList.appendChild(listItem);
-      }
-
-      function removeUserFromScreen(email) {
-        const userList = document.getElementById("listofusers");
-        const userItem = document.querySelector(`li[data-email="${email}"]`);
-
-        if (userItem) {
-          userList.removeChild(userItem);
-        }
-      }
-
-      window.addEventListener("DOMContentLoaded", () => {
-        const localStorageObj = localStorage;
-        const localStorageKeys = Object.keys(localStorageObj);
-
-        for (var i = 0; i < localStorageKeys.length; i++) {
-          const key = localStorageKeys[i];
-          const userDetailString = localStorageObj[key];
-          const userDetailObj = JSON.parse(userDetailString);
-          showNewUserOnScreen(userDetailObj);
-        }
-      });
-    </script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promises</title>
+</head>
+<body>
+    <h1>JAVA SCRIPT PROMISE IS HERE </h1>
+    <H2>LET'S ROCK WITH A SHOCK</H2>
+    <!-- <script src="/promise.js"></script> -->
+    <script src="/PromiseAll.js"></script>
+</body>
 </html>
