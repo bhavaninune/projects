@@ -1,102 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User Details</title>
-    <!-- Include Font Awesome CSS for the edit icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+<html>
+
 <body>
-    <h1>Edit User Details</h1>
+  <form onsubmit="saveToCloud(event)">
+    <label for="name">Enter name</label>
+    <input type="text" id="username" value="">
+    <label for "email">Enter email</label>
+    <input type="text" id="emailId" value="">
+    <label for="phonenumber">Enter phonenumber</label>
+    <input type="text" id="phonenumber" value="">
+    <input type="submit" class="btn-dark" value="Submit">
+  </form>
 
-    <ul id="user-list">
-        <!-- User details will be displayed here dynamically -->
-    </ul>
+  <div id="appointmentList"></div>
 
-    <form id="edit-form">
-        <input type="hidden" id="edit-id" name="id">
-        <label for="edit-name">Name:</label>
-        <input type="text" id="edit-name" name="name">
-        <br>
-        <label for="edit-email">Email:</label>
-        <input type="email" id="edit-email" name="email">
-        <br>
-        <button type="submit">Submit</button>
-    </form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+  <script>
+    // Function to save appointment data to the cloud
+    function saveToCloud(event) {
+      event.preventDefault();
+      const name = event.target.username.value;
+      const email = event.target.emailId.value;
+      const phonenumber = event.target.phonenumber.value;
+      const obj = {
+        name,
+        email,
+        phonenumber,
+      };
 
-    <script>
-        const editForm = document.getElementById('edit-form');
-        const editIdInput = document.getElementById('edit-id');
-        const editNameInput = document.getElementById('edit-name');
-        const editEmailInput = document.getElementById('edit-email');
-
-        // Function to populate the edit form with user details
-        function populateEditForm(user) {
-            editIdInput.value = user._id;
-            editNameInput.value = user.name;
-            editEmailInput.value = user.email;
-        }
-
-        // Function to fetch and display user details
-        function fetchUserDetails() {
-            axios.get('/api/users')
-                .then(response => {
-                    const userList = document.getElementById('user-list');
-                    userList.innerHTML = ''; // Clear existing list
-
-                    response.data.forEach(user => {
-                        // Create a list item for each user
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `
-                            ${user.name} - ${user.email}
-                            <span class="edit-btn" data-id="${user._id}">
-                                <i class="fas fa-edit"></i>
-                            </span>
-                        `;
-
-                        // Add a click event listener to the edit icon
-                        const editIcon = listItem.querySelector('.edit-btn');
-                        editIcon.addEventListener('click', () => {
-                            populateEditForm(user);
-                        });
-
-                        // Append the list item to the user list
-                        userList.appendChild(listItem);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching user details:', error);
-                });
-        }
-
-        // Function to handle form submission
-        editForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const userId = editIdInput.value;
-            const updatedName = editNameInput.value;
-            const updatedEmail = editEmailInput.value;
-
-            // Send a PUT request to update user details
-            axios.put(`/api/users/${userId}`, {
-                name: updatedName,
-                email: updatedEmail
-            })
-            .then(() => {
-                // Update the user details on the webpage
-                fetchUserDetails();
-                // Clear the form fields
-                editIdInput.value = '';
-                editNameInput.value = '';
-                editEmailInput.value = '';
-            })
-            .catch(error => {
-                console.error('Error updating user details:', error);
-            });
+      axios
+        .post("https://crudcrud.com/api/4af8490972764541a27d80ba3e0f80dd/appointmentdata", obj)
+        .then((response) => {
+          showNewAppointmentOnScreen(response.data);
+          event.target.reset(); // Clear the form
+        })
+        .catch((err) => {
+          console.log(err);
         });
+    }
 
-        // Fetch and display user details when the page loads
-        fetchUserDetails();
-    </script>
+    // Function to edit appointment data
+    function editAppointment(appointmentId, userDetailsObj) {
+      const updatedName = prompt("Enter updated name:", userDetailsObj.name);
+      const updatedEmail = prompt("Enter updated email:", userDetailsObj.email);
+      const updatedPhonenumber = prompt("Enter updated phonenumber:", userDetailsObj.phonenumber);
+      const updatedObj = {
+        name: updatedName,
+        email: updatedEmail,
+        phonenumber: updatedPhonenumber,
+      };
+
+      axios
+        .put(`https://crudcrud.com/api/4af8490972764541a27d80ba3e0f80dd/appointmentdata/${appointmentId}`, updatedObj)
+        .then((response) => {
+          updateAppointmentOnScreen(appointmentId, response.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    // Function to delete user details
+    function deleteAppointment(appointmentId) {
+      axios
+        .delete(`https://crudcrud.com/api/4af8490972764541a27d80ba3e0f80dd/appointmentdata/${appointmentId}`)
+        .then(() => {
+          const appointmentElement = document.getElementById(`appointment-${appointmentId}`);
+          if (appointmentElement) {
+            appointmentElement.remove(); // Remove the element from the website
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    // Function to display a new appointment on the website with edit and delete buttons
+    function showNewAppointmentOnScreen(userDetailsObj) {
+      const appointmentList = document.getElementById("appointmentList");
+      const appointmentElement = document.createElement("div");
+      appointmentElement.classList.add("new-appointment");
+      appointmentElement.id = `appointment-${userDetailsObj._id}`;
+
+      appointmentElement.innerHTML = `
+        <h3>${userDetailsObj.name}</h3>
+        <p>${userDetailsObj.email}</p>
+        <p>${userDetailsObj.phonenumber}</p>
+        <button onclick="editAppointment('${userDetailsObj._id}', ${JSON.stringify(userDetailsObj)})">Edit</button>
+        <button onclick="deleteAppointment('${userDetailsObj._id}')">Delete</button>
+      `;
+
+      appointmentList.appendChild(appointmentElement);
+    }
+
+    // Function to update user details on the website after editing
+    function updateAppointmentOnScreen(appointmentId, userDetailsObj) {
+      const appointmentElement = document.getElementById(`appointment-${appointmentId}`);
+      if (appointmentElement) {
+        appointmentElement.innerHTML = `
+          <h3>${userDetailsObj.name}</h3>
+          <p>${userDetailsObj.email}</p>
+          <p>${userDetailsObj.phonenumber}</p>
+          <button onclick="editAppointment('${userDetailsObj._id}', ${JSON.stringify(userDetailsObj)})">Edit</button>
+          <button onclick="deleteAppointment('${userDetailsObj._id}')">Delete</button>
+        `;
+      }
+    }
+
+    // Function to retrieve appointment data from the cloud
+    function getAppointmentData() {
+      axios
+        .get("https://crudcrud.com/api/4af8490972764541a27d80ba3e0f80dd/appointmentdata")
+        .then((response) => {
+          for (let i = 0; i < response.data.length; i++) {
+            showNewAppointmentOnScreen(response.data[i]);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    // Load appointment data when the DOM has loaded
+    window.addEventListener("DOMContentLoaded", getAppointmentData);
+  </script>
 </body>
+
 </html>
