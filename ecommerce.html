@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E commerce</title>
+</head>
+<body>
+    <header>
+        <h1 id="h"></h1>
+    </header>
+
+    <section class="container">
+        <form id="my-form">
+            <h1>welcome</h1>
+            <div class="msg"></div>
+            <div>
+                <label for="sellingprice">sellingprice</label>
+                <input type="text" id="sellingprice" value="">
+            </div>
+            <div>
+                <label for="productname">produce name</label>
+                <input type="text" id="productname" value="">
+            </div>
+            <div>
+                <label for="text">Choose category</label>
+                <!--input type="text" id="number" value=""-->
+                <select id="text" style="width: 50%;padding: .5rem .5rem;">
+                    <option value="electronic items">electronic items</option>
+                    <option value="food items">food items</option>
+                    <option value="skin care">skin care</option>
+
+                </select>
+                <input type="hidden" id="user-id" name="user-id" value="">
+
+            </div>
+
+            <input type="submit" class="btn-dark" value="submit">
+        </form>
+        <ul id="users"></ul>
+        <h5>electronic items</h5>
+        <ul id="ei" class="list-group-item">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>   
+        </ul>
+        <h5>food items</h5>
+        <ul id="fi" class="list-group-item">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>   
+        </ul>
+        <h5>skin care</h5>
+        <ul id="sc" class="list-group-item">
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>   
+        </ul>
+
+
+
+    </section>
+    <script type="text/javascript" src="ecommerce.js"></script>
+</body>
+</html>
